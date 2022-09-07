@@ -73,7 +73,10 @@ contract Lottery {
         // we produce a keccak256 hash that represents the combination of block.timestamp and block.difficulty
         // keccak256 takes one argument so we use abi.encodePacked to concatenate into one value(which is the encoding in bytes)
         // We then cast the final number to an integer then divide by module and get the remainder 
-        return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % modulo;
+        uint randomNumber;
+        randomNumber = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp)));
+        randomNumber = randomNumber % modulo;
+        return randomNumber; 
     }
     
     modifier inState(State state) {
