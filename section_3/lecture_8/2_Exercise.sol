@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.16;
 
+/*
+Write a constructor that takes in 2 arguments of types uint and string and sets the state variable 
+values to these passed-in values in the constructor.
+*/
 contract Exercise {
     int public number;
     string public text;

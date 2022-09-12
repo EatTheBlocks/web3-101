@@ -7,6 +7,9 @@ struct Wallet {
     uint amount;
 }
 
+/*
+Define a struct within a struct.
+*/
 contract Exercise {
 
   /* Todo: Create a struct called "CrowdFunding" that defines the following variables:

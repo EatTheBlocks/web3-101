@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.16;
 
+/*
+It is known that when you delete an item from the array, it creates a gap in the array. 
+Create a function that removes an item in the array without creating any gap in the array.
+*/
 contract Exercise {
     /* It is known that when you delete an item from the array, it creates a gap in the array. 
 

@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.16;
 
+/*
+Create a simplified token contract to keep track of balances and declare a function 
+to transfer these tokens from the sender to the recipient.
+*/
 contract Exercise {
 
     // TODO: Create a mapping from address to uint256 called "balances"
