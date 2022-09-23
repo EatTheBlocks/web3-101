@@ -22,7 +22,7 @@ module.exports = {
   solidity: '0.8.17',
   paths: {
     sources: './contracts',
-    artifacts: './artifacts',
+    artifacts: './src/artifacts',
   },
   defaultNetwork: 'hardhat',
   networks: {
