@@ -24,7 +24,4 @@ contract MappingContract {
         delete regularMap[_i];
         delete nestedMap[_i][_i];
     }
-
-
-
 }
