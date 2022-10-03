@@ -23,9 +23,14 @@ contract Exercise {
     function deposit() payable public {
     }
 
-    // Todo: Update the withdraw function to handle keeping track of multiple users
-    // and their balances
-    function withdraw(address payable receiver, uint amount) public {
+    // Todo: Add a new function to handle transferring the ETH between multiple users
+    // within the smart contract wallet 
+    function transfer(address payable receiver, uint amount) public {
+    }
+
+    // Todo: Update the withdraw function to handle the withdrawal from the smart contract
+    // to the user wallet
+    function withdraw(uint amount) public {
     }
 
     // Todo: Add a function to view the current balance for your own wallet

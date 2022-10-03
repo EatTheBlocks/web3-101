@@ -9,10 +9,16 @@ contract Solution {
         wallets[msg.sender] += msg.value;
     }
 
-    function withdraw(address payable receiver, uint amount) public {
+    function transfer(address payable receiver, uint amount) public {
         require(wallets[msg.sender] >= amount, "Not enough money in the wallet");
         wallets[msg.sender] -= amount;
         wallets[receiver] += amount;
+    }
+
+    function withdraw(uint amount) public {
+        address payable receiver = payable(msg.sender);
+        require(wallets[msg.sender] >= amount, "Not enough money in the wallet");
+        wallets[msg.sender] -= amount;     
         receiver.transfer(amount);
     }
 
