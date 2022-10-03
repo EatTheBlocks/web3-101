@@ -1,5 +1,5 @@
 {
-  "name": "ether-wallet-dapp",
+  "name": "ether-wallet-dapp-multiple-wallets",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
