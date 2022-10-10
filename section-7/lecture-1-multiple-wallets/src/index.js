@@ -3,15 +3,12 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 
-import '@rainbow-me/rainbowkit/styles.css';
+import '@rainbow-me/rainbowkit/styles.css'
 
-import {
-  getDefaultWallets,
-  RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
-import { chain, createClient, configureChains, WagmiConfig } from 'wagmi';
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
 
 /* adding hardhat network */
 const HardhatNetworkChain = {
@@ -30,23 +27,27 @@ const HardhatNetworkChain = {
 }
 
 const { chains, provider } = configureChains(
-  [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum, HardhatNetworkChain],
   [
-    alchemyProvider({ alchemyId: process.env.ALCHEMY_KEY }),
-    publicProvider(),
-  ]
-);
+    chain.mainnet,
+    chain.polygon,
+    chain.optimism,
+    chain.arbitrum,
+    chain.goerli,
+    HardhatNetworkChain,
+  ],
+  [alchemyProvider({ alchemyId: process.env.ALCHEMY_KEY }), publicProvider()]
+)
 
 const { connectors } = getDefaultWallets({
-  appName: "EtherWallet DApp",
-  chains
-});
+  appName: 'EtherWallet DApp',
+  chains,
+})
 
 const wagmiClient = createClient({
   autoConnect: true,
   connectors,
-  provider
-});
+  provider,
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(

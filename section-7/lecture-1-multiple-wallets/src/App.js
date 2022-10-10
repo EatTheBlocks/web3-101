@@ -1,14 +1,10 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
-import {
-  useContract,
-  useSigner,
-  useContractRead,
-} from "wagmi";
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
+import { useContract, useContractRead, useSigner } from 'wagmi'
 import EtherWallet from './artifacts/contracts/EtherWallet.sol/EtherWallet.json'
 
 function App() {
@@ -21,17 +17,17 @@ function App() {
   const { data: contractBalance } = useContractRead({
     addressOrName: contractAddress,
     contractInterface: EtherWallet.abi,
-    functionName: "balanceOf",
+    functionName: 'balanceOf',
     watch: true,
-  });
+  })
   useEffect(() => {
     if (contractBalance) {
-      let temp = contractBalance / 10 ** 18;
-      scSetScBalance(temp);
+      let temp = contractBalance / 10 ** 18
+      scSetScBalance(temp)
     }
-  }, [contractBalance]);
+  }, [contractBalance])
 
-  const { data: signer } = useSigner();
+  const { data: signer } = useSigner()
   const depositETH = useContract({
     addressOrName: contractAddress,
     contractInterface: EtherWallet.abi,
@@ -41,16 +37,16 @@ function App() {
   const depositToEtherWalletContract = async () => {
     await depositETH.deposit({
       value: ethers.utils.parseEther(ethToUseForDeposit),
-    }) 
+    })
   }
-  
+
   return (
-    <div className="container flex flex-col  items-center mt-10">
-      <div className="flex mb-6">
+    <div className='container flex flex-col  items-center mt-10'>
+      <div className='flex mb-6'>
         <ConnectButton />
       </div>
-      <h3 className="text-5xl font-bold mb-20">
-        {"Deposit to EtherWallet Smart Contract"}
+      <h3 className='text-5xl font-bold mb-20'>
+        {'Deposit to EtherWallet Smart Contract'}
       </h3>
 
       <Form>
@@ -60,10 +56,7 @@ function App() {
             placeholder='Enter the amount in ETH'
             onChange={(e) => setEthToUseForDeposit(e.target.value)}
           />
-          <Button
-            variant='primary'
-            onClick={depositToEtherWalletContract}
-          >
+          <Button variant='primary' onClick={depositToEtherWalletContract}>
             Deposit
           </Button>
         </Form.Group>
@@ -72,7 +65,7 @@ function App() {
       <div>EtherWallet Smart Contract Address: {contractAddress}</div>
       <div>EtherWallet Smart Contract Balance: {scBalance} ETH</div>
     </div>
-  );
+  )
 }
 
 export default App
