@@ -88,6 +88,10 @@ contract MultisigWallet {
         return withdrawTxes.length;
     }
 
+    function getWithdrawTxes() public view returns (WithdrawTx[] memory) {
+        return withdrawTxes;
+    }
+
     function getWithdrawTx(uint _transactionIndex)
         public
         view
