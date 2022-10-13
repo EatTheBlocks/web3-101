@@ -4,6 +4,9 @@ contract MultiSigWallet {
     /* TODO: Create a function called "getWithdrawTxCount" that retrieves the total number of 
              withdrawal transactions for the multisig  wallet
     */
+    /* TODO: Create a function called "getWithdrawTxes" that retrieves all the withdraw transactions
+             for the multisig wallet
+    */
     /* TODO: Create a function called "getWithdrawTx" that returns the withdraw transaction details 
              according to the transaction index in the array of withdraw transactions 
     */

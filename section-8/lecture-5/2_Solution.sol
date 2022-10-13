@@ -155,6 +155,13 @@ contract MultiSigWallet {
         return withdrawTxes.length;
     }
 
+    /* Create a function called "getWithdrawTxes" that retrieves all the withdraw transactions
+             for the multisig wallet
+    */
+    function getWithdrawTxes() public view returns (WithdrawTx[] memory) {
+        return withdrawTxes;
+    }
+
     /* Create a function called "getWithdrawTx" that returns the withdraw transaction details 
              according to the transaction index in the array of withdraw transactions 
     */
