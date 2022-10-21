@@ -38,6 +38,29 @@ describe('EtherWallet', function () {
     })
   })
 
+  describe('Check Balance', function () {
+    it('Should check default balance of the EtherWallet contract', async function () {
+      const { etherWallet } = await loadFixture(deployFixture)
+
+      const balance = await etherWallet.balanceOf()
+
+      expect(balance.toString()).to.equal(ethers.utils.parseEther('0'))
+    })
+
+    it('Should check balance of the EtherWallet contract after depositing some Ether', async function () {
+      const { etherWallet } = await loadFixture(deployFixture)
+
+      const tx = await etherWallet.deposit({
+        value: ethers.utils.parseEther('1'),
+      })
+      await tx.wait()
+
+      const balance = await etherWallet.balanceOf()
+
+      expect(balance.toString()).to.equal(ethers.utils.parseEther('1'))
+    })
+  })
+
   describe('Withdraw', function () {
     it('Should withdraw ether from the contract with zero ETH(Not a very useful test)', async function () {
       const { etherWallet, owner } = await loadFixture(deployFixture)
@@ -71,6 +94,16 @@ describe('EtherWallet', function () {
 
       balance = await ethers.provider.getBalance(etherWallet.address)
       expect(balance.toString()).to.equal(ethers.utils.parseEther('0'))
+    })
+
+    it('Should revert the tx when withdraw is called by someone other than the owner', async function () {
+      const { etherWallet, otherAccount } = await loadFixture(deployFixture)
+
+      await expect(
+        etherWallet
+          .connect(otherAccount)
+          .withdraw(otherAccount.address, ethers.utils.parseEther('0'))
+      ).to.be.revertedWith('Only owner can withdraw the Ether')
     })
   })
 })

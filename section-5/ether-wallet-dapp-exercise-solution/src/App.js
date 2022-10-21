@@ -6,7 +6,7 @@ import './App.css'
 import EtherWallet from './artifacts/contracts/EtherWallet.sol/EtherWallet.json'
 
 function App() {
-  const contractAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+  const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 
   // Metamask account handling
   const [account, setAccount] = useState('')
@@ -17,6 +17,10 @@ function App() {
   // EtherWallet Smart contract handling
   const [scBalance, scSetScBalance] = useState(0)
   const [ethToUseForDeposit, setEthToUseForDeposit] = useState(0)
+  const [ethToUseForWithdrawal, setEthToUseForWithdrawal] = useState(0)
+  const [ethAddrToUseForWithdrawal, setEthAddrToUseForWithdrawal] = useState(
+    ethers.constants.AddressZero
+  )
 
   useEffect(() => {
     // Get balance of the EtherWallet smart contract
@@ -98,6 +102,7 @@ function App() {
         value: ethers.utils.parseEther(ethToUseForDeposit),
       })
       await transaction.wait()
+      setEthToUseForDeposit(0)
       let balance = await signer.getBalance()
       balance = ethers.utils.formatEther(balance)
       setBalance(balance)
@@ -108,6 +113,40 @@ function App() {
     } catch (err) {
       console.log(
         'Error while depositing ETH to EtherWallet smart contract: ',
+        err
+      )
+    }
+  }
+
+  // Withdraw ETH from the EtherWallet smart contract
+  const withdrawFromEtherWalletContract = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner(account)
+      const contract = new ethers.Contract(
+        contractAddress,
+        EtherWallet.abi,
+        signer
+      )
+
+      const transaction = await contract.withdraw(
+        ethAddrToUseForWithdrawal,
+        ethers.utils.parseEther(ethToUseForWithdrawal)
+      )
+      await transaction.wait()
+      setEthToUseForWithdrawal(0)
+      setEthAddrToUseForWithdrawal(ethers.constants.AddressZero)
+
+      let balance = await signer.getBalance()
+      balance = ethers.utils.formatEther(balance)
+      setBalance(balance)
+
+      let scBalance = await contract.balanceOf()
+      scBalance = ethers.utils.formatEther(scBalance)
+      scSetScBalance(scBalance)
+    } catch (err) {
+      console.log(
+        'Error while withdrawing ETH from EtherWallet smart contract: ',
         err
       )
     }
@@ -146,7 +185,7 @@ function App() {
             <div>Connected Account: {account}</div>
             <div>Balance: {balance} ETH</div>
             <Form>
-              <Form.Group className='mb-3' controlId='numberInEth'>
+              <Form.Group className='mb-3' controlId='numberInEthDeposit'>
                 <Form.Control
                   type='text'
                   placeholder='Enter the amount in ETH'
@@ -157,6 +196,26 @@ function App() {
                   onClick={depositToEtherWalletContract}
                 >
                   Deposit to EtherWallet Smart Contract
+                </Button>
+              </Form.Group>
+            </Form>
+            <Form>
+              <Form.Group className='mb-3' controlId='numberInEthWithdraw'>
+                <Form.Control
+                  type='text'
+                  placeholder='Enter the amount in ETH'
+                  onChange={(e) => setEthToUseForWithdrawal(e.target.value)}
+                />
+                <Form.Control
+                  type='text'
+                  placeholder='Enter the ETH address to withdraw to'
+                  onChange={(e) => setEthAddrToUseForWithdrawal(e.target.value)}
+                />
+                <Button
+                  variant='primary'
+                  onClick={withdrawFromEtherWalletContract}
+                >
+                  Withdraw from EtherWallet Smart Contract
                 </Button>
               </Form.Group>
             </Form>
