@@ -13,6 +13,10 @@ function App() {
   // EtherWallet Smart contract handling
   const [scBalance, scSetScBalance] = useState(0)
   const [ethToUseForDeposit, setEthToUseForDeposit] = useState(0)
+  const [ethToUseForWithdrawal, setEthToUseForWithdrawal] = useState(0)
+  const [ethAddrToUseForWithdrawal, setEthAddrToUseForWithdrawal] = useState(
+    ethers.constants.AddressZero
+  )
 
   const { data: contractBalance } = useContractRead({
     addressOrName: contractAddress,
@@ -28,16 +32,26 @@ function App() {
   }, [contractBalance])
 
   const { data: signer } = useSigner()
-  const depositETH = useContract({
+  const contract = useContract({
     addressOrName: contractAddress,
     contractInterface: EtherWallet.abi,
     signerOrProvider: signer,
   })
   // Deposit ETH to the EtherWallet smart contract
   const depositToEtherWalletContract = async () => {
-    await depositETH.deposit({
+    await contract.deposit({
       value: ethers.utils.parseEther(ethToUseForDeposit),
     })
+    setEthToUseForDeposit(0)
+  }
+  // Withdraw ETH from the EtherWallet smart contract
+  const withdrawFromEtherWalletContract = async () => {
+    await contract.withdraw(
+      ethAddrToUseForWithdrawal,
+      ethers.utils.parseEther(ethToUseForWithdrawal)
+    )
+    setEthToUseForWithdrawal(0)
+    setEthAddrToUseForWithdrawal(ethers.constants.AddressZero)
   }
 
   return (
@@ -50,7 +64,7 @@ function App() {
       </h3>
 
       <Form>
-        <Form.Group className='mb-3' controlId='numberInEth'>
+        <Form.Group className='mb-3' controlId='numberInEthDeposit'>
           <Form.Control
             type='text'
             placeholder='Enter the amount in ETH'
@@ -58,6 +72,24 @@ function App() {
           />
           <Button variant='primary' onClick={depositToEtherWalletContract}>
             Deposit
+          </Button>
+        </Form.Group>
+      </Form>
+
+      <Form>
+        <Form.Group className='mb-3' controlId='numberInEthWithdraw'>
+          <Form.Control
+            type='text'
+            placeholder='Enter the amount in ETH'
+            onChange={(e) => setEthToUseForWithdrawal(e.target.value)}
+          />
+          <Form.Control
+            type='text'
+            placeholder='Enter the ETH address to withdraw to'
+            onChange={(e) => setEthAddrToUseForWithdrawal(e.target.value)}
+          />
+          <Button variant='primary' onClick={withdrawFromEtherWalletContract}>
+            Withdraw
           </Button>
         </Form.Group>
       </Form>
