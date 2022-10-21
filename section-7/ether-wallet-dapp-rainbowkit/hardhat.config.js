@@ -38,7 +38,8 @@ module.exports = {
     },
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      accounts: [PRIVATE_KEY],
+      // TODO: Uncomment the below line after updating PRIVATE_KEY above
+      // accounts: [PRIVATE_KEY],
     },
   },
 }
