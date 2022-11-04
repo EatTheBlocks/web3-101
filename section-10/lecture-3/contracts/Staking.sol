@@ -15,9 +15,8 @@ contract Staking is ERC20 {
     using EnumerableMap for EnumerableMap.UintToAddressMap;
 
     struct StakeWallet {
-        address owner;
         Wallet user;
-        uint256 amount;
+        uint256 stakedAmount;
         uint256 sinceBlock;
         uint256 untilBlock;
     }
@@ -35,10 +34,14 @@ contract Staking is ERC20 {
         returns (uint256 walletId, address _address)
     {
         Wallet wallet = new Wallet();
-        stakeWallets.push(StakeWallet(msg.sender, wallet, 0, 0, 0));
+        stakeWallets.push(StakeWallet(wallet, 0, 0, 0));
         uint256 walletid = stakeWallets.length - 1;
         emit WalletCreate(walletId, address(wallet));
         return (walletid, address(wallet));
+    }
+
+    function getWallets() public view returns (StakeWallet[] memory) {
+        return stakeWallets;
     }
 
     function walletDeposit(uint256 _walletId)
@@ -46,9 +49,24 @@ contract Staking is ERC20 {
         payable
         isWalletOwner(_walletId)
     {
-        StakeWallet memory stakeWallet = stakeWallets[_walletId];
+        StakeWallet storage stakeWallet = stakeWallets[_walletId];
         stakeWallet.user.deposit{value: msg.value}();
         emit WalletDeposit(_walletId, msg.value);
+    }
+
+    function walletBalance(uint256 _walletId) public view returns (uint256) {
+        StakeWallet memory stakeWallet = stakeWallets[_walletId];
+        return stakeWallet.user.balanceOf();
+    }
+
+    function walletWithdraw(
+        uint256 _walletId,
+        address payable _to,
+        uint _amount
+    ) public payable isWalletOwner(_walletId) {
+        StakeWallet storage stakeWallet = stakeWallets[_walletId];
+        stakeWallet.user.withdraw(_to, _amount);
+        emit WalletWithdraw(_walletId, _to, _amount);
     }
 
     // Bonus Exercise: Let user stake any amount of ETH rather than the whole balance
@@ -60,12 +78,12 @@ contract Staking is ERC20 {
         stakeWallet.user.withdraw(payable(address(this)), currentBalance);
 
         uint256 stakedForBlocks = (block.timestamp - stakeWallet.sinceBlock);
-        uint256 totalUnclaimedRewards = (stakeWallet.amount *
+        uint256 totalUnclaimedRewards = (stakeWallet.stakedAmount *
             stakedForBlocks *
             percentPerBlock) / 100;
         _mint(msg.sender, totalUnclaimedRewards);
 
-        stakeWallet.amount += currentBalance;
+        stakeWallet.stakedAmount += currentBalance;
         stakeWallet.sinceBlock = block.timestamp;
         stakeWallet.untilBlock = 0;
 
@@ -76,50 +94,14 @@ contract Staking is ERC20 {
 
     function currentStake(uint256 _walletId) public view returns (uint256) {
         StakeWallet memory stakeWallet = stakeWallets[_walletId];
-        return stakeWallet.amount;
-    }
-
-    function unstakeEth(uint256 _walletId)
-        public
-        payable
-        isWalletOwner(_walletId)
-    {
-        StakeWallet storage stakeWallet = stakeWallets[_walletId];
-        require(stakeWallet.untilBlock == 0, "Already unstaked");
-
-        payable(address(stakeWallet.user)).transfer(stakeWallet.amount);
-
-        uint256 rewardAmount = currentReward(_walletId);
-        _mint(msg.sender, rewardAmount);
-
-        stakeWallet.untilBlock = block.timestamp;
-        stakeWallet.sinceBlock = 0;
-        stakeWallet.amount = 0;
-
-        walletsStaked.remove(_walletId);
-        emit UnStakeEth(_walletId, stakeWallet.amount, rewardAmount);
-    }
-
-    function walletWithdraw(
-        uint256 _walletId,
-        address payable _to,
-        uint _amount
-    ) public payable isWalletOwner(_walletId) {
-        StakeWallet memory stakeWallet = stakeWallets[_walletId];
-        stakeWallet.user.withdraw(_to, _amount);
-        emit WalletWithdraw(_walletId, _to, _amount);
-    }
-
-    function walletBalance(uint256 _walletId) public view returns (uint256) {
-        StakeWallet memory stakeWallet = stakeWallets[_walletId];
-        return stakeWallet.user.balanceOf();
+        return stakeWallet.stakedAmount;
     }
 
     function currentReward(uint256 _walletId) public view returns (uint256) {
         StakeWallet memory stakeWallet = stakeWallets[_walletId];
 
         uint256 stakedForBlocks = (block.timestamp - stakeWallet.sinceBlock);
-        uint256 totalUnclaimedRewards = (stakeWallet.amount *
+        uint256 totalUnclaimedRewards = (stakeWallet.stakedAmount *
             stakedForBlocks *
             percentPerBlock) / 100;
 
@@ -134,8 +116,26 @@ contract Staking is ERC20 {
         return walletsStaked.contains(_walletId);
     }
 
-    function getWallets() public view returns (StakeWallet[] memory) {
-        return stakeWallets;
+    function unstakeEth(uint256 _walletId)
+        public
+        payable
+        isWalletOwner(_walletId)
+    {
+        StakeWallet storage stakeWallet = stakeWallets[_walletId];
+        require(stakeWallet.untilBlock == 0, "Already unstaked");
+
+        uint256 currentBalance = stakeWallet.stakedAmount;
+        payable(address(stakeWallet.user)).transfer(currentBalance);
+
+        uint256 rewardAmount = currentReward(_walletId);
+        _mint(msg.sender, rewardAmount);
+
+        stakeWallet.untilBlock = block.timestamp;
+        stakeWallet.sinceBlock = 0;
+        stakeWallet.stakedAmount = 0;
+
+        walletsStaked.remove(_walletId);
+        emit UnStakeEth(_walletId, stakeWallet.stakedAmount, rewardAmount);
     }
 
     receive() external payable {}

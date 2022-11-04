@@ -34,7 +34,7 @@ describe('EtherWallet', function () {
 
   describe('walletCreate', function () {
     it('Should create a wallet', async function () {
-      const { user1, staking } = await loadFixture(deployFixture)
+      const { staking } = await loadFixture(deployFixture)
 
       const tx = await staking.walletCreate()
       await tx.wait()
@@ -43,7 +43,6 @@ describe('EtherWallet', function () {
       const stakeWallet = stakeWallets[0]
 
       expect(stakeWallet.user).to.not.be.empty
-      expect(stakeWallet.owner).to.equal(user1.address)
     })
   })
 
@@ -93,7 +92,9 @@ describe('EtherWallet', function () {
       expect(
         (await ethers.provider.getBalance(wallet.user)).toString()
       ).to.equal(ethers.utils.parseEther('0'))
-      expect(wallet.amount.toString()).to.equal(ethers.utils.parseEther('1'))
+      expect(wallet.stakedAmount.toString()).to.equal(
+        ethers.utils.parseEther('1')
+      )
       expect(wallet.sinceBlock).to.not.be.empty
     })
   })
@@ -151,7 +152,9 @@ describe('EtherWallet', function () {
       expect(
         (await ethers.provider.getBalance(wallet.user)).toString()
       ).to.equal(ethers.utils.parseEther('0'))
-      expect(wallet.amount.toString()).to.equal(ethers.utils.parseEther('1'))
+      expect(wallet.stakedAmount.toString()).to.equal(
+        ethers.utils.parseEther('1')
+      )
       expect(wallet.sinceBlock).to.not.be.empty
 
       // Unstake ETH
@@ -164,7 +167,9 @@ describe('EtherWallet', function () {
       expect(
         (await ethers.provider.getBalance(wallet.user)).toString()
       ).to.equal(ethers.utils.parseEther('1'))
-      expect(wallet.amount.toString()).to.equal(ethers.utils.parseEther('0'))
+      expect(wallet.stakedAmount.toString()).to.equal(
+        ethers.utils.parseEther('0')
+      )
       expect(wallet.sinceBlock.toString()).to.equal(
         ethers.utils.parseEther('0')
       )
