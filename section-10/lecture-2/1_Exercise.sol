@@ -22,12 +22,25 @@ contract Exercise {
     // TODO: This should create a wallet for the user and return the wallet Id. The user can create as many wallets as they want
     function walletCreate() public returns (uint256 walletId) {}
 
+    // TODO: This will return the array of wallets
+    function getWallets() public view returns (StakeWallet[] memory) {}
+
     // TODO: This should let users deposit any amount of ETH into their wallet
     function walletDeposit(uint256 _walletId)
         public
         payable
         isWalletOwner(_walletId)
     {}
+
+    // TODO: This will return the current amount of ETH for a particular wallet
+    function walletBalance(uint256 _walletId) public view returns (uint256) {}
+
+    // TODO: This should let users withdraw any amount of ETH from their wallet
+    function walletWithdraw(
+        uint256 _walletId,
+        address payable _to,
+        uint _amount
+    ) public payable isWalletOwner(_walletId) {}
 
     /*
       TODO: This should let users stake the current ETH they have in their wallet to the staking pool. The user should 
@@ -46,6 +59,15 @@ contract Exercise {
     // TODO: This will return the current amount of ETH that a particular wallet has staked in the staking pool
     function currentStake(uint256 _walletId) public view returns (uint256) {}
 
+    // TODO: This will return the total unclaimed WEB3 ERC20 tokens based on the user’s stake in the staking pool
+    function currentReward(uint256 _walletId) public view returns (uint256) {}
+
+    // TODO: This will return the total amount of wallets that are currently in the staking pool
+    function totalAddressesStaked() public view returns (uint256) {}
+
+    // TODO: This will return true or false depending on whether a particular wallet is staked in the staking pool
+    function isWalletStaked(uint256 _walletId) public view returns (bool) {}
+
     /*
       TODO: This should let users unstake all their ETH they have in the staking pool. Doing so will automatically mint 
       the appropriate amount of WEB3 ERC20 tokens that have been accumulated so far. When you unstake your ETH from the pool, 
@@ -60,28 +82,6 @@ contract Exercise {
         // TODO: Transfer ETHB from the staking pool(this contract) to the wallet(Wallet contract)
         // TODO: Reward with WEB3 tokens that the user had accumulated so far
     }
-
-    // TODO: This should let users withdraw any amount of ETH from their wallet
-    function walletWithdraw(
-        uint256 _walletId,
-        address payable _to,
-        uint _amount
-    ) public payable isWalletOwner(_walletId) {}
-
-    // TODO: This will return the current amount of ETH for a particular wallet
-    function walletBalance(uint256 _walletId) public view returns (uint256) {}
-
-    // TODO: This will return the total unclaimed WEB3 ERC20 tokens based on the user’s stake in the staking pool
-    function currentReward(uint256 _walletId) public view returns (uint256) {}
-
-    // TODO: This will return the total amount of wallets that are currently in the staking pool
-    function totalAddressesStaked() public view returns (uint256) {}
-
-    // TODO: This will return true or false depending on whether a particular wallet is staked in the staking pool
-    function isWalletStaked(uint256 _walletId) public view returns (bool) {}
-
-    // TODO: This will return the array of wallets
-    function getWallets() public view returns (StakeWallet[] memory) {}
 
     // TODO: Implement the "receive()" fallback function so the contract can handle the deposit of ETH
 
