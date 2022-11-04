@@ -40,7 +40,7 @@ const { chains, provider } = configureChains(
 )
 
 const { connectors } = getDefaultWallets({
-  appName: 'MultisigWallet DApp',
+  appName: 'Smart Staking Wallet DApp',
   chains,
 })
 

@@ -35,6 +35,19 @@ module.exports = {
   networks: {
     hardhat: {
       chainID: 1337,
+      // Enable/Disable this based on your preferences. Check src/components/CurrentReward.js for more info
+      /*
+        We are going to generate a new block every 5 seconds to simulate real environment while
+        testing. We need to do this so we can see our current staked rewards in the frontend.
+        If you don't have this, your reward will not be updated.
+      */
+      // UNCOMMENT THE FOLLOWING LINES IF YOU WANT TO AUTOMINE ON YOUR LOCAL HARDHAT NETWORK every 5 seconds
+      /*
+      mining: {
+        auto: true,
+        interval: 5000,
+      },
+      */
     },
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_KEY}`,
