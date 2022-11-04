@@ -1,20 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+import { useContractRead } from 'wagmi'
+
+import { ethers } from 'ethers'
 
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 
-import StakedBalance from './StakedBalance'
+import WalletBalance from './WalletBalance'
 
 function Stake(props) {
+  const [balance, setBalance] = useState(0)
   const [show, setShow] = useState(false)
+
   // Stake ETH to the staking pool
   const stakeEth = async () => {
-    await props.contract.stakeEth(props.walletId)
+    if (balance > 0) {
+      await props.contract.stakeEth(props.walletId)
+    }
     setShow(false)
   }
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+
+  // Get balance of ETH in the wallet
+  const { data: dataBalance } = useContractRead({
+    ...props.stakingWalletContract,
+    functionName: 'walletBalance',
+    watch: true,
+    args: [props.walletId],
+  })
+
+  useEffect(() => {
+    if (dataBalance) {
+      const result = ethers.utils.formatEther(dataBalance)
+      setBalance(result)
+    }
+  }, [dataBalance])
 
   return (
     <>
@@ -34,7 +57,7 @@ function Stake(props) {
           You're about to stake{' '}
           <span style={{ fontWeight: 'bold' }}>
             {' '}
-            <StakedBalance
+            <WalletBalance
               stakingWalletContract={props.stakingWalletContract}
               walletId={props.walletId}
             />
@@ -44,9 +67,15 @@ function Stake(props) {
           <Button variant='secondary' onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant='primary' onClick={stakeEth}>
-            Confirm
-          </Button>
+          {balance > 0 ? (
+            <Button variant='primary' onClick={stakeEth}>
+              Confirm
+            </Button>
+          ) : (
+            <Button variant='secondary' onClick={stakeEth}>
+              Nothing to stake
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </>

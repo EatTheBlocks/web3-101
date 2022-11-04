@@ -54,7 +54,7 @@ function CurrentReward(props) {
   return (
     <>
       {stakeReward} WEB3{' '}
-      <Button variant='primary' onClick={refreshReward}>
+      <Button variant='info' onClick={refreshReward}>
         Refresh
       </Button>
     </>

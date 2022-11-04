@@ -134,7 +134,7 @@ function App() {
 
       <Container>
         <Row>
-          <Button variant='primary' onClick={walletCreate}>
+          <Button variant='dark' onClick={walletCreate}>
             Create a new Wallet
           </Button>
         </Row>

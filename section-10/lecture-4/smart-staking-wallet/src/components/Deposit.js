@@ -12,10 +12,12 @@ function Deposit(props) {
 
   // Deposit ETH to the wallet
   const walletDeposit = async () => {
-    await props.contract.walletDeposit(props.walletId, {
-      value: ethers.utils.parseEther(ethToUseForDeposit),
-    })
-    setEthToUseForDeposit(0)
+    if (ethToUseForDeposit > 0) {
+      await props.contract.walletDeposit(props.walletId, {
+        value: ethers.utils.parseEther(ethToUseForDeposit),
+      })
+      setEthToUseForDeposit(0)
+    }
     setShow(false)
   }
   const handleClose = () => setShow(false)
@@ -23,7 +25,7 @@ function Deposit(props) {
 
   return (
     <>
-      <Button variant='primary' onClick={handleShow}>
+      <Button variant='success' onClick={handleShow}>
         Deposit some ETH
       </Button>
 

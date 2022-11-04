@@ -15,13 +15,18 @@ function Withdraw(props) {
 
   // Withdraw ETH from the wallet
   const walletWithdraw = async () => {
-    await props.contract.walletWithdraw(
-      props.walletId,
-      ethAddrToUseForWithdrawal,
-      ethers.utils.parseEther(ethToUseForWithdrawal)
-    )
-    setEthToUseForWithdrawal(0)
-    setEthAddrToUseForWithdrawal(ethers.constants.AddressZero)
+    if (
+      ethToUseForWithdrawal > 0 &&
+      ethAddrToUseForWithdrawal !== ethers.constants.AddressZero
+    ) {
+      await props.contract.walletWithdraw(
+        props.walletId,
+        ethAddrToUseForWithdrawal,
+        ethers.utils.parseEther(ethToUseForWithdrawal)
+      )
+      setEthToUseForWithdrawal(0)
+      setEthAddrToUseForWithdrawal(ethers.constants.AddressZero)
+    }
     setShow(false)
   }
 
@@ -30,7 +35,7 @@ function Withdraw(props) {
 
   return (
     <>
-      <Button variant='primary' onClick={handleShow}>
+      <Button variant='danger' onClick={handleShow}>
         Withdraw ETH
       </Button>
 

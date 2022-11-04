@@ -1,4 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+import { useContractRead } from 'wagmi'
+
+import { ethers } from 'ethers'
 
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
@@ -6,19 +10,38 @@ import Modal from 'react-bootstrap/Modal'
 import StakedBalance from './StakedBalance'
 
 function Unstake(props) {
+  const [balance, setBalance] = useState(0)
   const [show, setShow] = useState(false)
+
   // Unstake ETH from the staking pool
   const unstakeEth = async () => {
-    await props.contract.unstakeEth(props.walletId)
+    if (balance > 0) {
+      await props.contract.unstakeEth(props.walletId)
+    }
     setShow(false)
   }
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
+  // Get balance of ETH that's staked in the staking pool
+  const { data: dataBalance } = useContractRead({
+    ...props.stakingWalletContract,
+    functionName: 'currentStake',
+    watch: true,
+    args: [props.walletId],
+  })
+
+  useEffect(() => {
+    if (dataBalance) {
+      const result = ethers.utils.formatEther(dataBalance)
+      setBalance(result)
+    }
+  }, [dataBalance])
+
   return (
     <>
-      <Button variant='primary' onClick={handleShow}>
+      <Button variant='warning' onClick={handleShow}>
         Unstake everything
       </Button>
 
@@ -45,9 +68,15 @@ function Unstake(props) {
           <Button variant='secondary' onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant='primary' onClick={unstakeEth}>
-            Confirm
-          </Button>
+          {balance > 0 ? (
+            <Button variant='primary' onClick={unstakeEth}>
+              Confirm
+            </Button>
+          ) : (
+            <Button variant='secondary' onClick={unstakeEth}>
+              Nothing to unstake
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </>
