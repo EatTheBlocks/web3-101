@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
+/*
+    WARNING: Please note that this contract has not been audited and as such may not be feasible 
+    to deploy to the mainnet as is. The contract acts only as an example to showcase how to develop
+    smart contracts in Solidity. It may contain vulnerabilities that are unaccounted for and as such,
+    should not be used in real environment. Do your own diligence before deploying any smart contracts
+    to the blockchain because once deployed, you cannot modify the contract.
+*/
 pragma solidity >=0.7.0 <0.9.0;
+
 /// @title Voting with delegation.
 contract Voting {
     // This declares a new complex type which will
@@ -7,14 +15,14 @@ contract Voting {
     // It will represent a single voter.
     struct Voter {
         uint weight; // weight is accumulated by delegation
-        bool voted;  // if true, that person already voted
+        bool voted; // if true, that person already voted
         address delegate; // person delegated to
-        uint vote;   // index of the voted proposal
+        uint vote; // index of the voted proposal
     }
 
     // This is a type for a single proposal.
     struct Proposal {
-        bytes32 name;   // short name (up to 32 bytes)
+        bytes32 name; // short name (up to 32 bytes)
         uint voteCount; // number of accumulated votes
     }
 
@@ -39,10 +47,7 @@ contract Voting {
             // `Proposal({...})` creates a temporary
             // Proposal object and `proposals.push(...)`
             // appends it to the end of `proposals`.
-            proposals.push(Proposal({
-                name: proposalNames[i],
-                voteCount: 0
-            }));
+            proposals.push(Proposal({name: proposalNames[i], voteCount: 0}));
         }
     }
 
@@ -63,10 +68,7 @@ contract Voting {
             msg.sender == chairperson,
             "Only chairperson can give right to vote."
         );
-        require(
-            !voters[voter].voted,
-            "The voter already voted."
-        );
+        require(!voters[voter].voted, "The voter already voted.");
         require(voters[voter].weight == 0);
         voters[voter].weight = 1;
     }
@@ -133,9 +135,7 @@ contract Voting {
 
     /// @dev Computes the winning proposal taking all
     /// previous votes into account.
-    function winningProposal() public view
-            returns (uint winningProposal_)
-    {
+    function winningProposal() public view returns (uint winningProposal_) {
         uint winningVoteCount = 0;
         for (uint p = 0; p < proposals.length; p++) {
             if (proposals[p].voteCount > winningVoteCount) {
@@ -148,9 +148,7 @@ contract Voting {
     // Calls winningProposal() function to get the index
     // of the winner contained in the proposals array and then
     // returns the name of the winner
-    function winnerName() external view
-            returns (bytes32 winnerName_)
-    {
+    function winnerName() external view returns (bytes32 winnerName_) {
         winnerName_ = proposals[winningProposal()].name;
     }
 }

@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
+/*
+    WARNING: Please note that this contract has not been audited and as such may not be feasible 
+    to deploy to the mainnet as is. The contract acts only as an example to showcase how to develop
+    smart contracts in Solidity. It may contain vulnerabilities that are unaccounted for and as such,
+    should not be used in real environment. Do your own diligence before deploying any smart contracts
+    to the blockchain because once deployed, you cannot modify the contract.
+*/
 pragma solidity ^0.8.16;
+
 contract Auction {
     // Parameters of the auction. Times are either
     // absolute unix timestamps (seconds since 1970-01-01)
@@ -41,10 +49,7 @@ contract Auction {
     /// Create a simple auction with `biddingTime`
     /// seconds bidding time on behalf of the
     /// beneficiary address `beneficiaryAddress`.
-    constructor(
-        uint biddingTime,
-        address payable beneficiaryAddress
-    ) {
+    constructor(uint biddingTime, address payable beneficiaryAddress) {
         beneficiary = beneficiaryAddress;
         auctionEndTime = block.timestamp + biddingTime;
     }
@@ -62,16 +67,14 @@ contract Auction {
 
         // Revert the call if the bidding
         // period is over.
-        if (block.timestamp > auctionEndTime)
-            revert AuctionAlreadyEnded();
+        if (block.timestamp > auctionEndTime) revert AuctionAlreadyEnded();
 
         // If the bid is not higher, send the
         // money back (the revert statement
         // will revert all changes in this
         // function execution including
         // it having received the money).
-        if (msg.value <= highestBid)
-            revert BidNotHighEnough(highestBid);
+        if (msg.value <= highestBid) revert BidNotHighEnough(highestBid);
 
         if (highestBid != 0) {
             // Sending back the money by simply using
@@ -124,10 +127,8 @@ contract Auction {
         // external contracts.
 
         // 1. Conditions
-        if (block.timestamp < auctionEndTime)
-            revert AuctionNotYetEnded();
-        if (ended)
-            revert AuctionEndAlreadyCalled();
+        if (block.timestamp < auctionEndTime) revert AuctionNotYetEnded();
+        if (ended) revert AuctionEndAlreadyCalled();
 
         // 2. Effects
         ended = true;
