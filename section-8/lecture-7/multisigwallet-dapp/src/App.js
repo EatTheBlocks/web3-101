@@ -55,19 +55,23 @@ function App() {
       let temp = contractBalance / 10 ** 18
       setScBalance(temp)
     }
-    setScTotalTransactionCount(withdrawTxCount.toNumber())
-    let pendingTxes = []
-    for (let i = 0; i <= withdrawTxes.length - 1; i++) {
-      if (!withdrawTxes[i][3]) {
-        pendingTxes.push({
-          transactionIndex: i,
-          to: withdrawTxes[i][0],
-          amount: parseInt(ethers.utils.formatEther(withdrawTxes[i][1])),
-          approvals: withdrawTxes[i][2].toNumber(),
-        })
-      }
+    if(withdrawTxCount) {
+      setScTotalTransactionCount(withdrawTxCount.toNumber())
     }
-    setScPendingTransactions(pendingTxes)
+    if(withdrawTxes) {
+      let pendingTxes = []
+      for (let i = 0; i <= withdrawTxes.length - 1; i++) {
+        if (!withdrawTxes[i][3]) {
+          pendingTxes.push({
+            transactionIndex: i,
+            to: withdrawTxes[i][0],
+            amount: parseInt(ethers.utils.formatEther(withdrawTxes[i][1])),
+            approvals: withdrawTxes[i][2].toNumber(),
+          })
+        }
+      }
+      setScPendingTransactions(pendingTxes)
+    }
   }, [contractBalance, withdrawTxCount, withdrawTxes])
 
   const { data: signer } = useSigner()
@@ -81,6 +85,7 @@ function App() {
     await contract.deposit({
       value: ethers.utils.parseEther(ethToUseForDeposit),
     })
+    setEthToUseForDeposit(0)
   }
   // Create Withdraw ETH tx in the MultisigWallet smart contract
   const withdrawFromEtherWalletContract = async () => {
@@ -88,6 +93,8 @@ function App() {
       ethAddrToUseForWithdrawal,
       ethers.utils.parseEther(ethToUseForWithdrawal)
     )
+    setEthToUseForWithdrawal(0)
+    setEthAddrToUseForWithdrawal(0)
   }
   // Approve pending withdraw tx in the MultisigWallet smart contract
   const approvePendingTransaction = async (transactionIndex) => {
@@ -120,7 +127,7 @@ function App() {
           <Col md='auto'>Owners:</Col>
           <Col>
             <ListGroup>
-              {scOwners.map((scOwner, i) => {
+              {scOwners && scOwners.map((scOwner, i) => {
                 return <ListGroup.Item key={i}>{scOwner}</ListGroup.Item>
               })}
             </ListGroup>

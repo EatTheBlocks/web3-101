@@ -41,13 +41,12 @@ module.exports = {
         testing. We need to do this so we can see our current staked rewards in the frontend.
         If you don't have this, your reward will not be updated.
       */
-      // UNCOMMENT THE FOLLOWING LINES IF YOU WANT TO AUTOMINE ON YOUR LOCAL HARDHAT NETWORK every 5 seconds
-      /*
+      // UNCOMMENT THE FOLLOWING LINES IF YOU WANT TO AUTOMINE ON YOUR LOCAL HARDHAT NETWORK every 5 seconds     
       mining: {
         auto: true,
         interval: 5000,
       },
-      */
+      
     },
     goerli: {
       url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_KEY}`,

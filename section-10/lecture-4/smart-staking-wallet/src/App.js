@@ -76,7 +76,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {wallets.map((wallet, i) => {
+              {wallets && wallets.map((wallet, i) => {
                 return (
                   <tr key={i}>
                     <td>{i}</td>
