@@ -3,93 +3,53 @@
 pragma solidity ^0.8.16;
 
 /*
-Update the “Lottery” contract from the lecture so that the admin should be able to create 
-multiple bets rather than just one at a time. 
-Bonus: Update the code so that one user can only bet once rather than multiple times.
+Update the “Escrow” contract from the lecture in the following ways:
+- The seller can be multiple people. You may need to keep track of this using an array
+- The escrow party address can be changed to a different address at any point in the future with a new function called “changeEscrow” that should only able to be called if you’re an escrow party yourself
+- Anyone should be able to deposit to the escrow and not just the buyer
+- You should be able to send any amount of money to the escrow. It doesn’t need to be the exact amount
+- You may also need to update the release function to account for the above new conditions
+- Releasing the escrow funds will send Ether to the multiple sellers if any in equal ratio
 */
-
 contract Exercise {
-    // Keep track of the current state of the betting round
-    enum State {
-        IDLE,
-        BETTING
+    address public buyer; // 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+    // Todo: Keep track of the multiple sellers rather than a single seller  
+    // 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+
+    address public escrowParty; // 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+    // Can use https://eth-converter.com/ to convert ether to wei
+    uint public amount; // 1000000000000000000 WEI = 1 ETH
+    
+    // The escrow party deploys the contract with the buyer and seller info 
+    // along with the amount of Ether needed to purchase the item
+    constructor(address _buyer, address payable[] memory _sellers, uint _amount) {
+        buyer = _buyer;
+        sellers = _sellers;
+        escrowParty = msg.sender; 
+        amount = _amount;
     }
 
-    // Keep track of all the players in the lottery
-    address payable[] public players;
-    // Todo: We are going to define a variable to keep track of the current states
+    // Todo: Update the deposit function to handle the following changes
+    // 1) deposit to the escrow account
+    // 2) We can let anyone send some Ether to this account
+    // 3) Should be able to send any amount of Ether
 
-    // Each betting round will have this number of players
-    uint public maxNumPlayers;
-    // The players can only bet with this exact amount to keep it fair
-    uint public moneyRequiredToBet;
-    // House will take some fee for each betting round
-    uint public houseFee;
-    // Only admin should be able to create a betting round and cancel it
-    address public admin;
     
-    constructor(uint fee) {
-        require(fee > 1 && fee < 99, 'Fee should be between 1 and 99');
-        admin = msg.sender;
-        houseFee = fee;
+    // Todo: Update the release function to handle the following changes
+    // 1) the escrow party will call this function to send the money to the sellers
+    // 2) Releasing the escrow funds will send Ether to the multiple sellers if any in equal ratio
+    function release() public onlyEscrowParty() {
     }
     
-    // Create a new betting round which will change the state to State.BETTING
-    function createBet(uint numPlayers, uint betMoney) external inState(State.IDLE) onlyAdmin() {
-        maxNumPlayers = numPlayers;
-        moneyRequiredToBet = betMoney;
-        currentState = State.BETTING;
+    function balanceOf() view public returns(uint) {
+        return address(this).balance;
     }
-    
-    // Allow the players to bet in the current betting round
-    // If we reach the max number of players, we decide the winner 
-    function bet() external payable inState(State.BETTING) {
-        require(msg.value == moneyRequiredToBet, 'Can only bet exactly the bet size');
-        players.push(payable(msg.sender));
-        if(players.length == maxNumPlayers ) {
-            // Pick a winner 
-            uint winner = _randomModulo(maxNumPlayers);
-            // (moneyRequiredToBet * maxNumPlayers) is the total amount of money in the lottery pool
-            // (100 - houseFee) / 100 is the percentage of the money remaining to each player 
-            // after houseFee is taken from the lottery pool
-            // Send the money to the winner
-            players[winner].transfer((moneyRequiredToBet * maxNumPlayers) * (100 - houseFee) / 100);
-            // Change the state to IDLE 
-            currentState = State.IDLE;
-            // Cleanup the data by removing the players from the betting round
-            delete players;
-        }
-    }
-    
-    // Cancel the current betting round which will change the state to State.IDLE
-    // By cancelling, we are basically sending back the Ether sent by different players
-    // because the betting round got cancelled 
-    function cancel() external inState(State.BETTING) onlyAdmin() {
-        for(uint i = 0; i < players.length; i++) {
-            players[i].transfer(moneyRequiredToBet);
-        }
-        delete players;
-        currentState = State.IDLE;
-    }
-    
-    function _randomModulo(uint modulo) view internal returns(uint) {
-        // Getting the remainder value will ensure that the random number we get will always 
-        // be less than the "modulo"
-        // block.timestamp can be manipulated by itself
-        // block.difficulty changes all the time so we combine multiple things to generate a good random no
-        // we produce a keccak256 hash that represents the combination of block.timestamp and block.difficulty
-        // keccak256 takes one argument so we use abi.encodePacked to concatenate into one value(which is the encoding in bytes)
-        // We then cast the final number to an integer then divide by module and get the remainder 
-        return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % modulo;
-    }
-    
-    modifier inState(State state) {
-        require(state == currentState, 'Current state does not allow this');
-        _;
-    }
-    
-    modifier onlyAdmin() {
-        require(msg.sender == admin, 'Only admin can perform this operation');
+
+    // Todo: Create a new function to change the escrow party at any point in the future
+    // function changeEscrow()
+
+    modifier onlyEscrowParty() {
+        require(msg.sender == escrowParty, 'Only escrow party can perform this operation');
         _;
     }
 }
