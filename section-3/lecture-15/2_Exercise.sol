@@ -13,7 +13,7 @@ contract Exercise {
     You do not need to check whether the index is out of bound for this exercise.
 
     This is what should happen:
-    [1, 2, 3, 4] -- remove(1) --> [1, 4, 3]
+    [1, 2, 3, 4] -- remove(1) --> [1, 3, 4]
     [1, 2, 3, 4, 5, 6] -- remove(2) --> [1, 2, 6, 4, 5, 6] 
     */
 
