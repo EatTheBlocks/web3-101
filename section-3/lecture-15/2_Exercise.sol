@@ -14,7 +14,7 @@ contract Exercise {
 
     This is what should happen:
     [1, 2, 3, 4] -- remove(1) --> [1, 3, 4]
-    [1, 2, 3, 4, 5, 6] -- remove(2) --> [1, 2, 6, 4, 5, 6] 
+    [1, 2, 3, 4, 5, 6] -- remove(2) --> [1, 2, 4, 5, 6] 
     */
 
     uint[] public arr;
