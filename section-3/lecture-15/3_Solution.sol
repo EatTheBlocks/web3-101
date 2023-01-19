@@ -19,17 +19,14 @@ contract Solution {
         arr = _arr;
     }
 
-    function remove(uint _index) public {
-        // This is how you can check for index out of bound
-        // require(_index < arr.length, "index out of bound");
-        // or
-        //
-        if (_index < arr.length) {
-            return;
+    function remove(uint index) public {
+        for(uint i = 0; i < arr.length ; i ++){
+            if(i >= index ){
+                arr[i] = arr[i] + 1;
+            }
+            if((arr.length -1) == i){
+                arr.pop();
+            }
         }
-        for (uint i = _index; i < arr.length - 1; i++) {
-            arr[i] = arr[i + 1];
-        }
-        arr.pop();
     }
 }
