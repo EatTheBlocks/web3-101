@@ -24,7 +24,7 @@ contract Solution {
         // require(_index < arr.length, "index out of bound");
         // or
         //
-        if (_index < arr.length) {
+        if (_index > arr.length) {
             return;
         }
         for (uint i = _index; i < arr.length - 1; i++) {
