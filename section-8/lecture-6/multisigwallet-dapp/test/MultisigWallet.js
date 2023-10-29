@@ -44,8 +44,8 @@ describe('EtherWallet', function () {
         value: ethers.utils.parseEther('1'),
       })
       await tx.wait()
-
-      const balance = await ethers.provider.getBalance(multisigWallet.address)
+      
+      const balance = await multisigWallet.balanceOf()
       expect(balance.toString()).to.equal(ethers.utils.parseEther('1'))
     })
   })
